@@ -5,7 +5,7 @@ services:
     build:
       context: . #present directory 
       args:
-        - DEV=true # need to chnage dev mode to false in dockerfile when deploying the app.
+        - DEV=true # need to change DEV to true else by default its false in the dockerfile.
     ports:
       - "8000:8000"
     volumes:
@@ -13,3 +13,22 @@ services:
                     #anything we create in docker container it creates in directory and vice versa.
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment: 
+      - DB_HOST=db #giving exactly what creating below at database.
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=changeme
+    depends_on:
+      - db #telling app service that it depends on db.
+            #so that it will wait for db service to start before app serivce starts.
+  db:
+    image: postgres:13-alpine #lite weight version of postgres docker image.
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=devdb #these are only for local machine not for deployment.these only be used at initial db configuration
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=changeme
+    
+volumes:
+  dev-db-data: #no need to add anything, bcz by defualt it saves at default location.
