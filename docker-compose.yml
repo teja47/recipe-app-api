@@ -1,0 +1,15 @@
+version: "3.9" #docker-compose syntax version
+
+services:
+  app:  
+    build:
+      context: . #present directory 
+      args:
+        - DEV=true # need to chnage dev mode to false in dockerfile when deploying the app.
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app #matching the app from files with docker app. 
+                    #anything we create in docker container it creates in directory and vice versa.
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"

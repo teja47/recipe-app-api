@@ -1,0 +1,4 @@
+#reason that we are creating separate requirments bcz,flake8 which is a linting tool
+#which is not required for deployed application.
+
+flake8>=3.9.2,<3.10 
