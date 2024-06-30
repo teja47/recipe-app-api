@@ -12,9 +12,11 @@ services:
       - ./app:/app #matching the app from files with docker app. 
                     #anything we create in docker container it creates in directory and vice versa.
     command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     environment: 
-      - DB_HOST=db #giving exactly what creating below at database.
+      - DB_HOST=db #giving exactly what creating below at database. and these will used in settings.py to access the db.
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=changeme
@@ -22,7 +24,7 @@ services:
       - db #telling app service that it depends on db.
             #so that it will wait for db service to start before app serivce starts.
   db:
-    image: postgres:13-alpine #lite weight version of postgres docker image.
+    image: postgres:13-alpine #light weight version of postgres docker image.
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     environment:
