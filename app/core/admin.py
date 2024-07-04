@@ -1,3 +1,30 @@
+"""
+Django admin customization
+"""
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin #default django authentication system.
+from core import models
+from django.utils.translation import gettext_lazy as _ #not required,but future proofing for translations.
 
-# Register your models here.
+class UserAdmin(BaseUserAdmin):
+    """Define the admin pages for users"""
+    ordering = ['id'] #order them by ID
+    list_display = ['email', 'name'] #3. displaying the all user list.
+    fieldsets = ( #2. listing the user details/fields with titles.
+        (None, {'fields': ('email','password')}),
+        (_('Permissions'), {'fields': ('is_active','is_staff','is_superuser')}),
+        (_('Important dates'), {'fields': ('last_login',)}),
+
+    )
+    readonly_fields = ['last_login']
+    add_fieldsets = ( #1.adding below fields for creating user page.
+        (None, {
+            'classes': ('wide',), #wide will make interface some better.
+            'fields': (
+                'email', 'password1', 'password2', 'name', 'is_active', 'is_staff','is_superuser',
+            )
+        }),
+    )
+
+admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Recipe)
