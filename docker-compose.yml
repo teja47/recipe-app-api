@@ -16,21 +16,12 @@ services:
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     environment: 
-      - DB_HOST=db #giving exactly what creating below at database. and these will used in settings.py to access the db.
-      - DB_NAME=devdb
-      - DB_USER=devuser
-      - DB_PASS=changeme
-    depends_on:
-      - db #telling app service that it depends on db.
-            #so that it will wait for db service to start before app serivce starts.
-  db:
-    image: postgres:13-alpine #light weight version of postgres docker image.
-    volumes:
-      - dev-db-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=devdb #these are only for local machine not for deployment.these only be used at initial db configuration
-      - POSTGRES_USER=devuser
-      - POSTGRES_PASSWORD=changeme
-    
+      - DB_HOST=database-1.creyc6u0wtk8.eu-north-1.rds.amazonaws.com #giving exactly what creating below at database. and these will used in settings.py to access the db.
+      - DB_NAME=recipedb
+      - DB_USER=postgres
+      - DB_PASS=Reddys143
+   
 volumes:
   dev-db-data: #no need to add anything, bcz by defualt it saves at default location.
+
+
