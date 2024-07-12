@@ -1,3 +1,4 @@
+# Use the official Python image from the Docker Hub
 FROM python:3.9-alpine3.13
 LABEL maintainer="teja bhathala"
 
@@ -8,16 +9,16 @@ COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
 WORKDIR /app
 EXPOSE 8000
-# --virtual .tmp... line we are grouping the dependencies under virtual package 
-#to remove it later to keep the image light weight
-ARG DEV=false # dev mode should be false when application is in deployment ???
+
+# Install dependencies
+ARG DEV=false
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev && \ 
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
-    if [ $DEV = 'true' ]; \
+    if [ "$DEV" = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
     rm -rf /tmp && \
@@ -25,7 +26,10 @@ RUN python -m venv /py && \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user 
+        django-user
+
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app.wsgi:application"]

@@ -3,25 +3,31 @@ version: "3.9" #docker-compose syntax version
 services:
   app:  
     build:
-      context: . #present directory 
+      context: . # present directory 
       args:
-        - DEV=true # need to change DEV to true else by default its false in the dockerfile.
+        - DEV=true # set DEV to true, else by default it's false in the Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app #matching the app from files with docker app. 
-                    #anything we create in docker container it creates in directory and vice versa.
+      - ./app:/app # match the app directory with the Docker container's app directory
+                    # anything created in the Docker container is created in the directory and vice versa
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     environment: 
-      - DB_HOST=database-1.creyc6u0wtk8.eu-north-1.rds.amazonaws.com #giving exactly what creating below at database. and these will used in settings.py to access the db.
+      - DB_HOST=database-1.creyc6u0wtk8.eu-north-1.rds.amazonaws.com # database host
       - DB_NAME=recipedb
       - DB_USER=postgres
       - DB_PASS=Reddys143
-   
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
 volumes:
-  dev-db-data: #no need to add anything, bcz by defualt it saves at default location.
-
-
+  dev-db-data: # no need to add anything, because by default it saves at the default location.
